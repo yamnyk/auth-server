@@ -2,6 +2,7 @@ const config = require('./config');
 const cors = require('cors');
 const express = require('express');
 const usersRoutes = require('./routes/user.routes');
+const tokenVerifyMiddleware = require('./middlewares/tokenVerifyMiddleware');
 
 const app = express();
 
@@ -9,6 +10,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
+// app.use('/users', tokenVerifyMiddleware);
+app.use('/users/:endpoint', tokenVerifyMiddleware);
 
 /* applying routes */
 app.use('/users', usersRoutes);

@@ -1,16 +1,12 @@
 [
   {
-    "id": 0,
-    "name": "Gogi",
-    "age": 44,
-    "position": "manager",
-    "stats": []
-  },
-  {
-    "id": 1603888872678,
+    "id": 1603890171568,
+    "email": "gogi@go.com",
+    "password": "$2b$10$PkKBPW0O2/NiZQqI0SbSbeMYmshM/omQJwOOr.VnecSCA9nBikZZO",
     "name": "Gogi2",
     "age": 44,
     "position": "manager",
-    "stats": []
+    "stats": [],
+    "created": "2020-10-28T13:02:51.568Z"
   }
 ]

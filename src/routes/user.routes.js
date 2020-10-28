@@ -1,40 +1,72 @@
 const USERS = require('../collections/users.json');
 const User = require('../models/user.model');
+const {SECRET_KEY} = require('../config')
 
 const express = require('express');
 const fs = require('fs');
 const usersRoutes = express.Router();
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 
-usersRoutes.get('/', (req, resp) => {
+usersRoutes.get('/all', (req, resp) => {
   resp.send(USERS);
 })
 
 usersRoutes.post('/register', (req, resp) => {
-  const {name, age, position, stats} = req.body;
+  const {name, age, position, stats, email, password} = req.body;
+  
   try {
-    let newUser = USERS.find(u => (u.name === name && u.age === age && u.position === position));
+    let newUser = USERS.find(u => (u.email === email && bcrypt.compareSync(password, u.password)));
     
     if (!newUser) {
-      newUser = new User(name, age, position, stats);
-      USERS.push(newUser);
-      fs.writeFile('src/collections/users.json', JSON.stringify(USERS), err => handleUsersUpdate(err, resp));
+      bcrypt.hash(password, 10, (err, hashedPass) => {
+        newUser = new User(email, hashedPass, name, age, position, stats);
+        USERS.push(newUser);
+        fs.writeFile('src/collections/users.json', JSON.stringify(USERS), err => handleUsersUpdate(err, resp));
+        
+        resp.send({
+          status: 'user successfully saved',
+          data: newUser
+        });
+      });
     }
     
     resp.send({
-      status: 'user successfully saved',
-      data: newUser
-    });
+      status: 'that user already exists'
+    })
+    
   } catch (e) {
     resp.status(400);
     resp.send(e)
   }
 });
 
+usersRoutes.post('/login', (req, resp) => {
+  const user = USERS.find(u => u.email === req.body.email);
+  
+  if (user && bcrypt.compareSync(req.body.password, user.password)) {
+    const payload = {
+      id: user.id,
+      name: user.name,
+      age: user.age,
+      position: user.position,
+      email: user.email,
+    }
+    const token = jwt.sign(payload, SECRET_KEY, {expiresIn: '30 days'});
+    resp.send({
+      token: token
+    });
+  } else {
+    resp.status(404)
+    resp.send({
+      error: "wrong email or password"
+    })
+  }
+})
+
 usersRoutes.get('/:id', (req, resp) => {
   resp.send(USERS.find(u => u.id === +req.params.id));
 });
-
-usersRoutes.get
 
 module.exports = usersRoutes;
 
