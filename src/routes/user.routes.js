@@ -17,11 +17,3 @@ usersRoutes.get('/:id', (req, resp) => {
 });
 
 module.exports = usersRoutes;
-
-function handleUsersUpdate(err) {
-  if (err) {
-    resp.status(400);
-    resp.send(err);
-  }
-  console.log('users file updated')
-}
