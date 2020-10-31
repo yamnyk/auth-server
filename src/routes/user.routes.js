@@ -1,6 +1,5 @@
 const USERS = require('../collections/users.json');
 const User = require('../models/user.model');
-const {SECRET_KEY} = require('../config')
 
 const express = require('express');
 const fs = require('fs');
